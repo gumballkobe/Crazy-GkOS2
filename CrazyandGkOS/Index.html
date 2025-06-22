@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Crazy&Gk OS</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      user-select: none;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: hidden;
+      font-family: "Lucida Console", monospace;
+      background-color: black;
+      color: white;
+    }
+
+    body.locked {
+      background-color: black;
+    }
+
+    #loginScreen {
+      position: absolute;
+      inset: 0;
+      background: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-size: 20px;
+      z-index: 9999;
+    }
+
+    #loginScreen input {
+      font-size: 18px;
+      padding: 10px;
+      margin-top: 10px;
+      border: 2px solid lime;
+      background: black;
+      color: lime;
+    }
+
+    #desktop {
+      display: none;
+      height: 100%;
+      width: 100%;
+      position: relative;
+      background: url('https://i.imgur.com/U2vGd9j.jpeg') no-repeat center center;
+      background-size: cover;
+    }
+
+    .desktop-icon {
+      position: absolute;
+      width: 64px;
+      text-align: center;
+      color: white;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .desktop-icon img {
+      width: 48px;
+      height: 48px;
+      display: block;
+      margin: 0 auto;
+    }
+
+    .taskbar {
+      position: absolute;
+      bottom: 0;
+      height: 32px;
+      background: #111;
+      color: white;
+      width: 100%;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      font-size: 13px;
+      border-top: 2px solid #333;
+    }
+
+    .start-button {
+      background: #000088;
+      color: white;
+      border: 2px outset #333;
+      padding: 2px 8px;
+      font-weight: bold;
+      margin-right: 10px;
+      cursor: pointer;
+    }
+
+    .time {
+      margin-left: auto;
+    }
+
+    .window {
+      position: absolute;
+      width: 420px;
+      height: 280px;
+      background: #eeeeee;
+      border: 2px ridge #ccc;
+      display: none;
+      flex-direction: column;
+      z-index: 10;
+    }
+
+    .window-header {
+      background: navy;
+      color: white;
+      padding: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: move;
+      font-weight: bold;
+    }
+
+    .window-body {
+      flex: 1;
+      background: black;
+      padding: 10px;
+      overflow: auto;
+      font-size: 13px;
+      color: lime;
+    }
+
+    .close-btn {
+      background: red;
+      color: white;
+      border: none;
+      font-weight: bold;
+      padding: 0 6px;
+      cursor: pointer;
+    }
+
+    .start-menu {
+      position: absolute;
+      bottom: 32px;
+      left: 10px;
+      background: #111;
+      border: 2px ridge #444;
+      color: white;
+      width: 180px;
+      display: none;
+      flex-direction: column;
+      font-size: 13px;
+      z-index: 999;
+    }
+
+    .start-menu div {
+      padding: 6px;
+      border-bottom: 1px solid #333;
+      cursor: pointer;
+    }
+
+    .start-menu div:hover {
+      background: #333;
+    }
+
+    .glitch-text {
+      animation: glitch 0.3s infinite;
+    }
+
+    @keyframes glitch {
+      0% { transform: translate(0, 0); }
+      20% { transform: translate(-1px, 1px); }
+      40% { transform: translate(1px, -1px); }
+      60% { transform: translate(-2px, 2px); }
+      80% { transform: translate(2px, -2px); }
+      100% { transform: translate(0, 0); }
+    }
+
+    #bsod {
+      display: none;
+      position: absolute;
+      inset: 0;
+      background: #0000aa;
+      color: white;
+      font-size: 18px;
+      padding: 50px;
+      z-index: 10000;
+    }
+
+    #bsod h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    #bsod pre {
+      font-family: monospace;
+      color: white;
+    }
+  </style>
+</head>
+<body class="locked">
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div>AUTHENTICATING NODE</div>
+  <input type="password" id="loginInput" placeholder="Enter access key...">
+</div>
+
+<!-- DESKTOP START -->
+<div id="desktop">
+
+  <!-- Desktop Icons -->
+  <div class="desktop-icon" style="top: 40px; left: 30px;" onclick="openWindow('terminalWindow')">
+    <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-apps/128/utilities-terminal-icon.png">
+    <div>Command</div>
+  </div>
+
+  <div class="desktop-icon" style="top: 140px; left: 30px;" onclick="openWindow('browserWindow')">
+    <img src="https://icons.iconarchive.com/icons/google/noto-emoji-objects/64/62843-globe-showing-americas-icon.png">
+    <div>GkNet</div>
+  </div>
+
+  <div class="desktop-icon" style="top: 240px; left: 30px;" onclick="openWindow('shadowWindow')">
+    <img src="https://icons.iconarchive.com/icons/custom-icon-design/pretty-office-11/64/folder-locked-icon.png">
+    <div>ShadowDir</div>
+  </div>
+
+  <div class="desktop-icon" style="top: 340px; left: 30px;" onclick="openWindow('analyticsWindow')">
+    <img src="https://icons.iconarchive.com/icons/paomedia/small-n-flat/64/chart-bar-icon.png">
+    <div>Analytics</div>
+  </div>
+
+  <div class="desktop-icon" style="top: 440px; left: 30px;" onclick="openWindow('scannerWindow')">
+    <img src="https://icons.iconarchive.com/icons/graphicloads/medical-health/64/brain-icon.png">
+    <div>CogScan</div>
+  </div>
+
+  <!-- Taskbar -->
+  <div class="taskbar">
+    <button class="start-button" onclick="toggleStartMenu()">Start</button>
+    <div class="time" id="clock">00:00:00</div>
+  </div>
+
+  <!-- Start Menu -->
+  <div class="start-menu" id="startMenu">
+    <div onclick="openWindow('terminalWindow')">Command Line</div>
+    <div onclick="openWindow('shadowWindow')">Shadow Directory</div>
+    <div onclick="openWindow('analyticsWindow')">User Analytics</div>
+    <div onclick="openWindow('scannerWindow')">Cognitive Scanner</div>
+    <div onclick="triggerBSOD()">System Kernel Check</div>
+  </div>
+
+  <!-- Terminal Window -->
+  <div class="window" id="terminalWindow" style="top: 100px; left: 150px;">
+    <div class="window-header" onmousedown="dragWindow(event, this.parentElement)">
+      Secure Command Console
+      <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    </div>
+    <div class="window-body" id="terminalBody">
+      <div>Crazy&Gk SecureOS v7.4</div>
+      <div>Node registered. Type 'help' for commands.</div>
+      <div>&gt; <input id="terminalInput" style="background:black;color:lime;border:none;width:90%;" onkeydown="handleTerminal(event)">
+      </div>
+    </div>
+  </div>
+
+  <!-- Browser Window -->
+  <div class="window" id="browserWindow" style="top: 140px; left: 180px;">
+    <div class="window-header" onmousedown="dragWindow(event, this.parentElement)">
+      GkNet Panel
+      <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    </div>
+    <div class="window-body">
+      <p>Initializing secure mesh...</p>
+      <p>Connected Nodes: 154</p>
+      <p>Surveillance Logs: <span class="glitch-text">ACTIVE</span></p>
+      <p>Last Ping Origin: US-WEST</p>
+      <p class="glitch-text">WARNING: Node 7 is unstable.</p>
+      <p>Detected anomalies: [voice packet drift]</p>
+    </div>
+  </div>
+
+  <!-- Shadow Directory -->
+  <div class="window" id="shadowWindow" style="top: 180px; left: 210px;">
+    <div class="window-header" onmousedown="dragWindow(event, this.parentElement)">
+      /SHADOW/DIRECTORY
+      <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    </div>
+    <div class="window-body" style="color:red;">
+      <p>[!] ACCESS OVERRIDE</p>
+      <p>[LOG] Jeremy K. M. uplink accepted</p>
+      <p>[REDACTED FILE 1] Gk_Assistant_VoiceDump</p>
+      <p>[REDACTED FILE 2] user_memory_scan.log</p>
+      <p>[KEY] “They won't believe it’s real...”</p>
+    </div>
+  </div>
+
+  <!-- Analytics -->
+  <div class="window" id="analyticsWindow" style="top: 240px; left: 250px;">
+    <div class="window-header" onmousedown="dragWindow(event, this.parentElement)">
+      /USER/ANALYTICS
+      <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    </div>
+    <div class="window-body" style="color:orange;">
+      <p>Tracking session: ACTIVE</p>
+      <p>Keystrokes: 183</p>
+      <p>Clipboard contents: captured</p>
+      <p>Recent Sites: <br> - yt.com<br> - chat.openai.com<br> - gk.ai/console</p>
+    </div>
+  </div>
+
+  <!-- Cognitive Scanner -->
+  <div class="window" id="scannerWindow" style="top: 300px; left: 300px;">
+    <div class="window-header" onmousedown="dragWindow(event, this.parentElement)">
+      Cognitive Scan - BETA
+      <button class="close-btn" onclick="this.parentElement.parentElement.style.display='none'">X</button>
+    </div>
+    <div class="window-body" style="color:cyan;">
+      <p>Reading neural pattern...</p>
+      <p>Memory thread sync: ██░░░░░░░</p>
+      <p>Emotion mapping: ░░░░██░░░</p>
+      <p class="glitch-text">Caution: mental loop detected</p>
+    </div>
+  </div>
+
+<!-- BLUE SCREEN OF DEATH -->
+<div id="bsod">
+  <h2>:(</h2>
+  <p>Your system encountered a critical issue and has been shut down to prevent damage.</p>
+  <pre>
+CRITICAL_PROCESS_DIED
+UserID: NODE_███-███
+Memory_Dump_Path: /SYS/USR/REPORTS/DUMP001.LOG
+System will attempt auto-repair.
+  </pre>
+</div>
+
+<!-- SCRIPTING CORE -->
+<script>
+  // LOGIN SCREEN
+  const loginInput = document.getElementById("loginInput");
+  loginInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      if (loginInput.value === "1999") {
+        document.getElementById("loginScreen").style.display = "none";
+        document.getElementById("desktop").style.display = "block";
+        document.body.classList.remove("locked");
+        playStartup();
+      } else {
+        alert("ACCESS DENIED");
+      }
+    }
+  });
+
+  // CLOCK
+  function updateClock() {
+    const now = new Date();
+    document.getElementById("clock").innerText = now.toLocaleTimeString();
+  }
+  setInterval(updateClock, 1000);
+  updateClock();
+
+  // OPEN WINDOWS
+  function openWindow(id) {
+    const win = document.getElementById(id);
+    win.style.display = "flex";
+    win.style.zIndex = 1000;
+    document.getElementById("startMenu").style.display = "none";
+  }
+
+  // START MENU TOGGLE
+  function toggleStartMenu() {
+    const menu = document.getElementById("startMenu");
+    menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+  }
+
+  // DRAG WINDOW
+  function dragWindow(e, el) {
+    const offsetX = e.clientX - el.offsetLeft;
+    const offsetY = e.clientY - el.offsetTop;
+    function move(ev) {
+      el.style.left = ev.clientX - offsetX + "px";
+      el.style.top = ev.clientY - offsetY + "px";
+    }
+    document.addEventListener("mousemove", move);
+    document.addEventListener("mouseup", () => {
+      document.removeEventListener("mousemove", move);
+    }, { once: true });
+  }
+
+  // TERMINAL COMMAND HANDLING
+  function handleTerminal(e) {
+    if (e.key === "Enter") {
+      const input = e.target;
+      const value = input.value.trim().toLowerCase();
+      const body = document.getElementById("terminalBody");
+      const line = document.createElement("div");
+      line.textContent = "> " + value;
+      body.insertBefore(line, input.parentElement);
+      input.value = "";
+
+      // Handle Commands
+      switch (value) {
+        case "help":
+          terminalOut("Available: whoami, logs -x, unlock shadow, trace origin, shutdown, clear");
+          break;
+        case "whoami":
+          terminalOut("NodeID: 0x" + Math.floor(Math.random()*999999).toString(16).padStart(6, "0"));
+          break;
+        case "logs -x":
+          terminalOut("User behavior logs: keymap_dump.log | search.log | mic_stream.aud");
+          break;
+        case "unlock shadow":
+          openWindow("shadowWindow");
+          terminalOut("Shadow Directory unlocked.");
+          break;
+        case "trace origin":
+          terminalOut("Ping: Detected US-WEST. Geo-hash: encoded.");
+          break;
+        case "shutdown":
+          triggerBSOD();
+          break;
+        case "clear":
+          const all = Array.from(body.querySelectorAll("div"));
+          all.forEach(d => { if (!d.querySelector('input')) d.remove(); });
+          break;
+        default:
+          terminalOut("Unknown command: " + value);
+      }
+    }
+  }
+
+  function terminalOut(text) {
+    const out = document.createElement("div");
+    out.textContent = text;
+    document.getElementById("terminalBody").insertBefore(out, document.getElementById("terminalInput").parentElement);
+  }
+
+  // BSOD TRIGGER
+  function triggerBSOD() {
+    document.getElementById("bsod").style.display = "block";
+    setTimeout(() => location.reload(), 7000);
+  }
+
+  // AUDIO
+  function playStartup() {
+    const sound = new Audio("https://www.soundjay.com/button/button-3.mp3");
+    sound.volume = 0.4;
+    sound.play();
+  }
+</script>
+
+<!-- FINAL SYSTEM CLEANUP -->
+<script>
+  // Hide start menu if clicking outside
+  document.addEventListener("click", (e) => {
+    const menu = document.getElementById("startMenu");
+    if (!e.target.closest(".start-button") && !e.target.closest(".start-menu")) {
+      menu.style.display = "none";
+    }
+  });
+
+  // Prevent right-click context menu
+  document.addEventListener("contextmenu", (e) => {
+    e.preventDefault();
+  });
+
+  // ESC key closes start menu
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      document.getElementById("startMenu").style.display = "none";
+    }
+  });
+</script>
+
+</div> <!-- end #desktop -->
+</body>
+</html>
